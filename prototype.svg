@@ -3,17 +3,24 @@
      xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink">
   <style>
-    .arcs .ring a {
+    .ring * {
+      -webkit-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+      -moz-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+      -o-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
       transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-
     }
-    .arcs .ring use {
+    .ring use {
+      -webkit-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+      -moz-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+      -o-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+      transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
       pointer-events: none;
     }
-    .arcs.show .ring a {
-      transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-    }
   </style>
+
+  <defs>
+    <use xlink:href="icons.svg" />
+  </defs>
 
   <g id="arcs" class="arcs" ></g>
 </svg>
