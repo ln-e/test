@@ -224,7 +224,6 @@
 
 
   SocialCircle.prototype.build_ = function(r, R, extraHover) {
-    //this.arcsContainer_.innerHTML = '';
     while (this.arcsContainer_.firstChild) {
       this.arcsContainer_.removeChild(this.arcsContainer_.firstChild);
     }
@@ -288,8 +287,10 @@
           'begin': "indefinite",
           'fill':"freeze",
           'attributeName':"d",
-          'dur':"800ms",
+          'dur': "800ms",
+          'from': normalPath,
           'to': hoveredPath,
+          'values': normalPath + '; ' + hoveredPath,
           'calcMode': 'spline',
           'keySplines': '0.19 1 0.22 1'
         })).beginElement();
@@ -300,11 +301,13 @@
       wrappedG.addEventListener('mouseout', function() {
         //newPath.setAttribute('d', normalPath);
         newPath.appendChild(this.makeSVG('animate', {
-          'begin': "indefinite",
+          'begin': "0",
           'fill':"freeze",
           'attributeName':"d",
-          'dur':"800ms",
+          'dur': "800ms",
+          'from': hoveredPath,
           'to': normalPath,
+          'values': hoveredPath + '; ' + normalPath ,
           'calcMode': 'spline',
           'keySplines': '0.19 1 0.22 1'
         })).beginElement();
