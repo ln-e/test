@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+
+    .news {
+      height: 400px;
+      border: 1px solid red;
+    }
+
+    .share-circle {
+      box-sizing: border-box;
+      position: absolute;
+      padding: 0 30px;
+    }
+
+    .share-circle__trigger {
+      box-sizing: content-box;
+      padding: 20px;
+      background: url('/trigger.png') no-repeat center center;
+      width: 20px;
+      height: 29px;
+      position: absolute;
+      top: 50%;
+      left: 0; /* 30px - 20px/2 - 20px */
+      margin-top: -34.5px;
+      z-index: 2;
+    }
+
+    .share-circle__svg-container {
+      overflow: hidden;
+      width: 92px;
+      height: 184px;
+    }
+
+    .share-circle:hover .share-circle__svg {
+      transform: rotate(0deg);
+    }
+
+    .share-circle__svg {
+      transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+      transform: rotate(-180deg);
+      transform-origin: 0 92px;
+    }
+
+    @media screen and (max-width: 1000px) {
+      .share-circle:hover .share-circle__svg {
+        transform: rotate(-180deg);
+      }
+
+      .share-circle.share-circle--opened .share-circle__svg {
+        transform: rotate(0deg);
+      }
+
+      .share-circle__trigger {
+        cursor: pointer;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="news">
+  <div class="share-circle">
+      <div class="share-circle__trigger"></div>
+      <div class="share-circle__svg-container"></div>
+  </div>
+</div>
+
+<br>
+<hr>
+<br>
+
+<div class="news">
+  <div class="share-circle">
+      <div class="share-circle__trigger"></div>
+    <div class="share-circle__svg-container"></div>
+  </div>
+</div>
+
+
+<script>
+
+
+  var SocialCircle = function(root, config, items) {
+
+    this.root_ = root;
+
+    this.config_ = config;
+
+    this.items_ = items;
+
+    this.count_ = this.items_.length;
+
+    this.angle_ = Math.max(180 / this.count_, this.config_.hasOwnProperty('min-angle')?this.config_['min-angle']:0);
+
+    this.totalAngle_ = this.angle_ * this.count_;
+
+    if (this.totalAngle_ > 360) {
+      this.totalAngle_ = 360;
+      this.angle_ = 360 / this.count_;
+    }
+
+    this.init_('prototype.svg');
+
+    this.svg_ = this.root_.getElementsByTagName('svg')[0];
+
+    this.arcsContainer_ = this.root_.getElementsByClassName('arcs')[0];
+
+    this.trigger_ = this.root_.getElementsByClassName('share-circle__trigger')[0];
+
+
+    this.build_(50, 82, 10);
+    this.attachEvents_();
+  };
+
+
+
+  SocialCircle.prototype.init_ = function(path) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET',path,false);
+    if (xhr.overrideMimeType) {
+      xhr.overrideMimeType('image/svg+xml'); // to be sure
+    } else {
+      xhr.setRequestHeader('Content-Type', 'image/svg+xml');
+    }
+    xhr.send('');
+
+    try {
+      this.root_.getElementsByClassName('share-circle__svg-container')[0].appendChild(xhr.responseXML.documentElement);
+    } catch(e) {
+      this.root_.innerHTML += xhr.responseXML.documentElement.xml;
+    }
+  };
+
+
+  SocialCircle.prototype.getIconProp_ = function(name, prop) {
+    if(!this.config_.hasOwnProperty('icons') && this.config_.icons.hasOwnProperty(name)){
+      console.error('Social icon ' + name + ' not configured');
+
+      return null;
+    }
+
+    return this.config_.icons[name][prop];
+  };
+
+
+  SocialCircle.prototype.attachEvents_ = function() {
+    this.trigger_.addEventListener('click', function() {
+      if(this.root_.classList.contains('share-circle--opened')){
+        this.root_.classList.remove('share-circle--opened');
+      } else {
+        this.root_.classList.add('share-circle--opened');
+      }
+    }.bind(this));
+  };
+
+
+  SocialCircle.prototype.build_ = function(r, R, extraHover) {
+    this.arcsContainer_.innerHTML = '';
+    this.svg_.setAttribute('width',(R + extraHover));
+    this.svg_.setAttribute('height', (R + extraHover) * 2);
+    this.arcsContainer_.setAttribute('width', R + extraHover);
+    this.arcsContainer_.setAttribute('height', (R + extraHover) * 2);
+
+
+    this.items_.forEach(function(item, i) {
+
+      var color = this.getIconProp_(item.icon, 'bg'),
+          x = 0,
+          y = R + extraHover,
+          startAngle = (90 - i * this.angle_) * Math.PI / 180,
+          endAngle = (90 - (i + 1) * this.angle_) * Math.PI / 180,
+          normalPath = this.createSvgArc(x, y, r, R, startAngle, endAngle),
+          hoveredPath = this.createSvgArc(x, y, r, R + extraHover, startAngle, endAngle);
+
+      var newPath = this.makeSVG('path', {
+        'class': 'ring',
+        'd': normalPath,
+        'fill': color,
+        'stroke': color,
+        'stroke-width': '1px',
+        'data-index': i
+      });
+
+      var wrappedG = this.makeSVG('g', {'class': 'ring'});
+      var newG = this.makeSVG('a', {'style': 'transform-origin: '+ (R + extraHover) + 'px ' + (R + extraHover) + 'px;'});
+      newG.setAttributeNS('http://www.w3.org/1999/xlink', 'href', this.getIconProp_(item.icon, 'url'));
+      wrappedG.appendChild(newG);
+      newG.appendChild(newPath);
+
+      var iconWidth = this.getIconProp_(item.icon, 'icon-width'),
+          iconHeight = this.getIconProp_(item.icon, 'icon-height'),
+
+          iconX = x + Math.cos((90 - (i + 0.5) * this.angle_) * Math.PI / 180) * ((R+r)/2) - iconWidth / 2 ,
+          iconY = y - Math.sin((90 - (i + 0.5) * this.angle_) * Math.PI / 180) * ((R+r)/2) - iconHeight / 2,
+
+          iconXHovered = x + Math.cos((90 - (i + 0.5) * this.angle_) * Math.PI / 180) * ((R+r+extraHover)/2) - iconWidth / 2 ,
+          iconYHovered = y - Math.sin((90 - (i + 0.5) * this.angle_) * Math.PI / 180) * ((R+r+extraHover)/2) - iconHeight / 2;
+
+      var use = newG.appendChild(this.makeSVG('use', {
+        'x': iconX,
+        'y': iconY,
+        'width': iconWidth + 'px',
+        'height': iconHeight + 'px'
+      }));
+
+      use.setAttributeNS('http://www.w3.org/1999/xlink','href', this.getIconProp_(item.icon, 'icon'));
+
+      this.arcsContainer_.appendChild(wrappedG);
+
+      wrappedG.addEventListener('mouseover', function() {
+        newPath.setAttribute('d', hoveredPath);
+        use.setAttribute('x', iconXHovered);
+        use.setAttribute('y', iconYHovered);
+      }.bind(this));
+
+      wrappedG.addEventListener('mouseout', function() {
+        newPath.setAttribute('d', normalPath);
+        use.setAttribute('x', iconX);
+        use.setAttribute('y', iconY);
+      }.bind(this));
+
+    }.bind(this));
+
+  };
+
+
+  SocialCircle.prototype.createSvgArc = function (x, y, r, R, startAngle, endAngle) {
+    if(startAngle>endAngle){
+      var s = startAngle;
+      startAngle = endAngle;
+      endAngle = s;
+    }
+    if (endAngle - startAngle > Math.PI*2 ) {
+      endAngle = Math.PI*1.99999;
+    }
+
+    var largeArc = endAngle - startAngle <= Math.PI ? 0 : 1;
+
+    return [
+      'M', x+Math.cos(startAngle)*r, y-(Math.sin(startAngle)*r),
+      'L', x+Math.cos(startAngle)*R, y-(Math.sin(startAngle)*R),
+      'A', R, R, 0, largeArc, 0, x+Math.cos(endAngle)*R, y-(Math.sin(endAngle)*R),
+      'L', x+Math.cos(endAngle)*r, y-(Math.sin(endAngle)*r),
+      'A', r, r, 0, largeArc, 1, x+Math.cos(startAngle)*r, y-(Math.sin(startAngle)*r)
+    ].join(' ');
+  };
+
+
+  SocialCircle.prototype.makeSVG = function(tag, attrs) {
+    var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+
+    for (var k in attrs) {
+      if (attrs.hasOwnProperty(k)) {
+        el.setAttribute(k, attrs[k]);
+      }
+    }
+
+    return el;
+  };
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var config = {
+
+      'icons': {
+        'twitter': {'icon': 'icons.svg#twitter-icon', 'icon-width':'20', 'icon-height':'15', 'bg': '#00c4ff', 'url': '//ya.ru'},
+        'google': {'icon': 'icons.svg#google-plus-icon', 'icon-width':'20', 'icon-height':'15', 'bg': '#ff0000', 'url': '//ya.ru'},
+        'vk': {'icon': 'icons.svg#vk-icon', 'icon-width':'20', 'icon-height':'12', 'bg': '#1164bb', 'url': '//ya.ru'},
+        'fb': {'icon': 'icons.svg#facebook-icon', 'icon-width':'20', 'icon-height':'18', 'bg': '#007bff', 'url': '//ya.ru'},
+        'lj': {'icon': 'icons.svg#lj-icon', 'icon-width':'20', 'icon-height':'12', 'bg': '#000', 'url': '//ya.ru'}
+      }
+    };
+
+    var shares = document.getElementsByClassName('share-circle');
+    for(var i = 0; i < shares.length; i++) {
+      var el = shares[i];
+      console.log(el);
+      new SocialCircle(el, config, [
+        {'icon': 'twitter', 'url': '//ya.ru'},
+        {'icon': 'google', 'url': '//ya.ru'},
+        {'icon': 'vk', 'url': '//ya.ru'},
+        {'icon': 'fb', 'url': '//ya.ru'},
+        {'icon': 'lj', 'url': '//ya.ru'}
+      ]);
+    }
+  });
+
+</script>
+
+</body>
+</html>
