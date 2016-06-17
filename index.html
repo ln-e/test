@@ -290,23 +290,12 @@
           'dur': "800ms",
           'from': normalPath,
           'to': hoveredPath,
-          'values': normalPath + '; ' + hoveredPath,
+          'values': normalPath + ';' + hoveredPath,
           'calcMode': 'spline',
           'keySplines': '0.19 1 0.22 1'
         })).beginElement();
 
-        use.appendChild(this.makeSVG('animateTransform', {
-          'begin': "indefinite",
-          'fill':"freeze",
-          'attributeName':"transform",
-          'type': 'translate',
-          'dur': "800ms",
-          'values': '0 0;' + (iconXHovered - iconX) + ' ' + (iconYHovered - iconY) + '',
-          'calcMode': 'spline',
-          'keySplines': '0.19 1 0.22 1'
-        })).beginElement();
-
-        //use.setAttribute('style', 'transform: translate(' + (iconXHovered - iconX) + 'px, '+ (iconYHovered - iconY) + 'px)');
+        use.setAttribute('style', 'transform: translate(' + (iconXHovered - iconX) + 'px, '+ (iconYHovered - iconY) + 'px)');
       }.bind(this));
 
       wrappedG.addEventListener('mouseout', function() {
@@ -318,21 +307,11 @@
           'dur': "800ms",
           'from': hoveredPath,
           'to': normalPath,
-          'values': hoveredPath + '; ' + normalPath ,
+          'values': hoveredPath + ';' + normalPath ,
           'calcMode': 'spline',
           'keySplines': '0.19 1 0.22 1'
         })).beginElement();
-        use.appendChild(this.makeSVG('animateTransform', {
-          'begin': "indefinite",
-          'fill':"freeze",
-          'attributeName': "transform",
-          'type': 'translate',
-          'dur': "800ms",
-          'values': (iconXHovered - iconX) + ' ' + (iconYHovered - iconY) + ';0 0',
-          'calcMode': 'spline',
-          'keySplines': '0.19 1 0.22 1'
-        })).beginElement();
-        //use.setAttribute('style', 'transform: translate(0, 0)');
+        use.setAttribute('style', 'transform: translate(0, 0)');
       }.bind(this));
 
     }.bind(this));
