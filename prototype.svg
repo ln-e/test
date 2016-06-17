@@ -4,13 +4,8 @@
      xmlns:xlink="http://www.w3.org/1999/xlink">
   <style>
     .ring * {
-      -webkit-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-      -moz-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-      -o-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-      transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
     }
     .ring use {
-
       pointer-events: none;
     }
   </style>
