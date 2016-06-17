@@ -295,7 +295,18 @@
           'keySplines': '0.19 1 0.22 1'
         })).beginElement();
 
-        use.setAttribute('style', 'transform: translate(' + (iconXHovered - iconX) + 'px, '+ (iconYHovered - iconY) + 'px)');
+        use.appendChild(this.makeSVG('animateTransform', {
+          'begin': "indefinite",
+          'fill':"freeze",
+          'attributeName':"transform",
+          'type': 'translate',
+          'dur': "800ms",
+          'values': '0 0;' + (iconXHovered - iconX) + ' ' + (iconYHovered - iconY) + '',
+          'calcMode': 'spline',
+          'keySplines': '0.19 1 0.22 1'
+        })).beginElement();
+
+        //use.setAttribute('style', 'transform: translate(' + (iconXHovered - iconX) + 'px, '+ (iconYHovered - iconY) + 'px)');
       }.bind(this));
 
       wrappedG.addEventListener('mouseout', function() {
@@ -311,7 +322,17 @@
           'calcMode': 'spline',
           'keySplines': '0.19 1 0.22 1'
         })).beginElement();
-        use.setAttribute('style', 'transform: translate(0, 0)');
+        use.appendChild(this.makeSVG('animateTransform', {
+          'begin': "indefinite",
+          'fill':"freeze",
+          'attributeName': "transform",
+          'type': 'translate',
+          'dur': "800ms",
+          'values': (iconXHovered - iconX) + ' ' + (iconYHovered - iconY) + ';0 0',
+          'calcMode': 'spline',
+          'keySplines': '0.19 1 0.22 1'
+        })).beginElement();
+        //use.setAttribute('style', 'transform: translate(0, 0)');
       }.bind(this));
 
     }.bind(this));

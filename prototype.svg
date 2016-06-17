@@ -10,10 +10,7 @@
       transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
     }
     .ring use {
-      -webkit-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-      -moz-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-      -o-transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-      transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+
       pointer-events: none;
     }
   </style>
